@@ -1,21 +1,23 @@
 from fastapi import FastAPI, Depends, HTTPException, Request
+from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse, FileResponse
+from libgravatar import Gravatar
 import pathlib
+from src.database.db import get_db
 from src.routes import auth, notes, tags, contacts
 
-# from src.routes.contacts import router
 
 app = FastAPI()
 
-app.include_router(auth.router, prefix="/api/auth")
+app.include_router(auth.router, prefix="/api")
 # app.include_router(tags.router, prefix="/api")
 # app.include_router(notes.router, prefix="/api")
-app.include_router(contacts.router, prefix="/api/contacts")
+app.include_router(contacts.router, prefix="/api")
 
 templates = Jinja2Templates(directory="src/templates")
 
-# app.include_router(contacts_router)
+app.mount("/static", StaticFiles(directory="src/static"), name="static")
 
 favicon_path = pathlib.Path("src/favicon/favicon.ico")
 
@@ -25,14 +27,16 @@ def get_favicon():
     return favicon_path
 
 
-@app.get("/", response_class=HTMLResponse)
+@app.get("/", response_class=HTMLResponse, description="Main Page")
 async def home(request: Request):
-    return templates.TemplateResponse("home.html", {"request": request})
+    return templates.TemplateResponse(
+        "home.html", {"request": request, "title": "My App"}
+    )
 
 
-# @app.get("/")
-# def read_root():
-#     return {"message": "Hello World"}
+@app.get("/api/healthchaker")
+def healthchaker(db, Session=Depends(get_db)):
+    return {"message": "Hello World"}
 
 
 # if __name__ == "__main__":

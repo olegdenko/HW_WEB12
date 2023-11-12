@@ -11,7 +11,6 @@ from starlette import status
 
 from src.repository import users as repository_users
 from src.database.db import get_db
-from src.database.models import User
 
 
 class Auth:
