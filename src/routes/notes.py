@@ -8,7 +8,7 @@ from src.schemas import NoteModel, NoteUpdate, NoteStatusUpdate, NoteResponse
 from src.repository import notes as repository_notes
 
 
-router = APIRouter(prefix='/notes', tags=["notes"])
+router = APIRouter(prefix="/notes", tags=["notes"])
 
 
 @router.get("/", response_model=List[NoteResponse])
@@ -22,7 +22,8 @@ async def read_note(note_id: int, db: Session = Depends(get_db)):
     note = await repository_notes.get_note(note_id, db)
     if note is None:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Note not found")
+            status_code=status.HTTP_404_NOT_FOUND, detail="Note not found"
+        )
     return note
 
 
@@ -36,16 +37,20 @@ async def update_note(body: NoteUpdate, note_id: int, db: Session = Depends(get_
     note = await repository_notes.update_note(note_id, body, db)
     if note is None:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Note not found")
+            status_code=status.HTTP_404_NOT_FOUND, detail="Note not found"
+        )
     return note
 
 
 @router.patch("/{note_id}", response_model=NoteResponse)
-async def update_status_note(body: NoteStatusUpdate, note_id: int, db: Session = Depends(get_db)):
+async def update_status_note(
+    body: NoteStatusUpdate, note_id: int, db: Session = Depends(get_db)
+):
     note = await repository_notes.update_status_note(note_id, body, db)
     if note is None:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Note not found")
+            status_code=status.HTTP_404_NOT_FOUND, detail="Note not found"
+        )
     return note
 
 
@@ -54,5 +59,6 @@ async def remove_note(note_id: int, db: Session = Depends(get_db)):
     note = await repository_notes.remove_note(note_id, db)
     if note is None:
         raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND, detail="Note not found")
+            status_code=status.HTTP_404_NOT_FOUND, detail="Note not found"
+        )
     return note

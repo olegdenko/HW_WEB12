@@ -1,7 +1,6 @@
 from fastapi import HTTPException
 from datetime import timedelta, datetime
 from typing import List
-from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
 from src.database.models import Contact

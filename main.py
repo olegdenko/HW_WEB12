@@ -2,13 +2,13 @@ from fastapi import FastAPI, Depends, HTTPException, Request
 from fastapi.templating import Jinja2Templates
 from fastapi.responses import HTMLResponse, FileResponse
 import pathlib
-from src.routes import notes, tags, contacts
+from src.routes import auth, notes, tags, contacts
 
 # from src.routes.contacts import router
 
 app = FastAPI()
 
-app.include_router(contacts.router, prefix="/auth")
+app.include_router(auth.router, prefix="/auth")
 # app.include_router(tags.router, prefix="/api")
 # app.include_router(notes.router, prefix="/api")
 app.include_router(contacts.router, prefix="/contacts")
@@ -33,3 +33,7 @@ async def home(request: Request):
 # @app.get("/")
 # def read_root():
 #     return {"message": "Hello World"}
+
+
+# if __name__ == "__main__":
+#     uvicorn.run("main:app", host="localhost", port="8000", reload=True)

@@ -5,10 +5,12 @@ from fastapi import Depends, HTTPException
 from passlib.context import CryptContext
 from fastapi.security import OAuth2PasswordBearer
 from sqlalchemy.orm import Session
+
 from jose import JWTError, jwt
 from starlette import status
 
-from database.models import get_db, User
+from src.database.models import User
+from src.database.db import get_db
 
 
 class Hash:

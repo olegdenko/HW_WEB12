@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends, HTTPException, status, Security
+from fastapi import APIRouter, Depends, HTTPException, status, Security
 from fastapi.security import (
     OAuth2PasswordRequestForm,
     HTTPAuthorizationCredentials,
@@ -7,27 +7,24 @@ from fastapi.security import (
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 
-
-from repository.auth import (
+from src.database.db import get_db
+from src.repository.auth import (
     create_access_token,
     create_refresh_token,
     get_email_form_refresh_token,
     get_current_user,
     Hash,
 )
-from database.models import get_db, User
+from src.database.models import User
+from src.schemas import UserModel
 
-app = FastAPI()
+
 hash_handler = Hash()
 security = HTTPBearer()
+router = APIRouter(prefix="/auth", tags=["auth"])
 
 
-class UserModel(BaseModel):
-    username: str
-    password: str
-
-
-@app.post("/signup")
+@router.post("/signup")
 async def signup(body: UserModel, db: Session = Depends(get_db)):
     exist_user = db.query(User).filter(User.email == body.username).first()
     if exist_user:
@@ -43,7 +40,7 @@ async def signup(body: UserModel, db: Session = Depends(get_db)):
     return {"new_user": new_user.email}
 
 
-@app.post("/login")
+@router.post("/login")
 async def login(
     body: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)
 ):
@@ -68,7 +65,7 @@ async def login(
     }
 
 
-@app.get("/refresh_token")
+@router.get("/refresh_token")
 async def refresh_token(
     credentials: HTTPAuthorizationCredentials = Security(security),
     db: Session = Depends(get_db),
@@ -94,11 +91,11 @@ async def refresh_token(
     }
 
 
-@app.get("/")
+@router.get("/")
 async def root():
     return {"message": "Hello World"}
 
 
-@app.get("/secret")
+@router.get("/secret")
 async def read_item(current_user: User = Depends(get_current_user)):
     return {"message": "secret router", "owner": current_user.email}

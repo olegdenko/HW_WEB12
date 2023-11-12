@@ -4,15 +4,9 @@ from typing import List, Type
 from pydantic import BaseModel, Field, EmailStr
 
 
-class UserBase(BaseModel):
-    # name: str = Field(max_length=50)
-    # last_name: str = Field(max_length=50)
-    e_mail: EmailStr
-    # phone_number: str = Field(max_length=20)
-    # born_date: DateModel
-    # description: str = Field(max_length=150)
-    password: Field(max_length=50)
-    # refresh_token = Column(String(255), nullable=True)
+class UserModel(BaseModel):
+    username: str
+    password: str
 
 
 class DateModel(BaseModel):
