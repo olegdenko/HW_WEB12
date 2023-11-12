@@ -8,10 +8,10 @@ from src.routes import auth, notes, tags, contacts
 
 app = FastAPI()
 
-app.include_router(auth.router, prefix="/auth")
+app.include_router(auth.router, prefix="/api/auth")
 # app.include_router(tags.router, prefix="/api")
 # app.include_router(notes.router, prefix="/api")
-app.include_router(contacts.router, prefix="/contacts")
+app.include_router(contacts.router, prefix="/api/contacts")
 
 templates = Jinja2Templates(directory="src/templates")
 

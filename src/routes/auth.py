@@ -8,36 +8,40 @@ from sqlalchemy.orm import Session
 from pydantic import BaseModel
 
 from src.database.db import get_db
-from src.repository.auth import (
-    create_access_token,
-    create_refresh_token,
-    get_email_form_refresh_token,
-    get_current_user,
-    Hash,
-)
+from src.repository import users as repository_users
+from src.services.auth import auth_servise
+
+# from src.repository.auth import (
+#     create_access_token,
+#     create_refresh_token,
+#     get_email_form_refresh_token,
+#     get_current_user,
+#     Hash,
+# )
 from src.database.models import User
-from src.schemas import UserModel
+from src.schemas import UserModel, UserResponse
 
 
-hash_handler = Hash()
+# hash_handler = Hash()
 security = HTTPBearer()
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 
-@router.post("/signup")
+@router.post(
+    "/signup", response_model=UserResponse, status_code=status.HTTP_201_CREATED
+)
 async def signup(body: UserModel, db: Session = Depends(get_db)):
-    exist_user = db.query(User).filter(User.email == body.username).first()
+    exist_user = await repository_users.get_user_by_email(body.email)
     if exist_user:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT, detail="Account already exists"
         )
-    new_user = User(
-        email=body.username, password=hash_handler.get_password_hash(body.password)
-    )
+    password = auth_servise.get_password_hash(body.password)
+    new_user = User(email=body.username)
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
-    return {"new_user": new_user.email}
+    return new_user.email
 
 
 @router.post("/login")

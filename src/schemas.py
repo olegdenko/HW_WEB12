@@ -1,12 +1,13 @@
 from datetime import datetime
 from datetime import date
-from typing import List, Type
+from typing import List
 from pydantic import BaseModel, Field, EmailStr
 
 
 class UserModel(BaseModel):
-    username: str
-    password: str
+    username: str = Field(min_length=6, max_length=12)
+    email: EmailStr
+    password: str = Field(min_length=6, max_length=12)
 
 
 class DateModel(BaseModel):
@@ -85,3 +86,14 @@ class ContactResponse(ContactBase):
     phone_number: str
     born_date: date
     description: str
+
+
+class UserResponse(BaseModel):
+    id: int
+    username: str
+    e_mail: str
+    avatar: str
+    roles: str
+
+    class Config:
+        orm_mode = True
