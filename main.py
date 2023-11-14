@@ -34,6 +34,20 @@ async def home(request: Request):
     )
 
 
+@app.get("/login", response_class=HTMLResponse, description="Login")
+async def login(request: Request):
+    return templates.TemplateResponse(
+        "login.html", {"request": request, "title": "My App"}
+    )
+
+
+@app.get("/register", response_class=HTMLResponse, description="Sign Up")
+async def register(request: Request):
+    return templates.TemplateResponse(
+        "register.html", {"request": request, "title": "My App"}
+    )
+
+
 @app.get("/api/healthchaker")
 def healthchaker(db, Session=Depends(get_db)):
     return {"message": "Hello World"}

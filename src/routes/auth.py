@@ -1,10 +1,13 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Security
+from fastapi import APIRouter, Depends, HTTPException, status, Security, Header
+from fastapi.responses import HTMLResponse, RedirectResponse
 from fastapi.security import (
     OAuth2PasswordRequestForm,
     HTTPAuthorizationCredentials,
     HTTPBearer,
 )
 from sqlalchemy.orm import Session
+
+# from src.database.models import User
 
 from src.database.db import get_db
 from src.repository import users as repository_users
@@ -41,11 +44,13 @@ async def login(
     user = await repository_users.get_user_by_email(body.username, db)
     if user is None:
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid email"
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="401 UNAUTHORIZED Invalid email",
         )
     if not auth_servise.verify_password(body.password, user.password):
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid password"
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="401 UNAUTHORIZED Invalid password",
         )
     # Generate JWT
     access_token = await auth_servise.create_access_token(data={"sub": user.email})
@@ -57,6 +62,38 @@ async def login(
         "refresh_token": refresh_token,
         "token_type": "bearer",
     }
+
+
+# @router.post("/login", response_model=TokenModel)
+# async def login(
+#     body: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)
+# ):
+#     user = await repository_users.get_user_by_email(body.username, db)
+#     if user is None:
+#         raise HTTPException(
+#             status_code=status.HTTP_401_UNAUTHORIZED,
+#             detail="401 UNAUTHORIZED Invalid email",
+#         )
+#     if not auth_servise.verify_password(body.password, user.password):
+#         raise HTTPException(
+#             status_code=status.HTTP_401_UNAUTHORIZED,
+#             detail="401 UNAUTHORIZED Invalid password",
+#         )
+
+#     # Generate JWT
+#     access_token = await auth_servise.create_access_token(data={"sub": user.email})
+#     refresh_token = await auth_servise.create_refresh_token(data={"sub": user.email})
+#     await repository_users.update_token(user, refresh_token, db)
+
+#     # Перенаправляємо користувача на головну сторінку
+#     redirect_url = "/"
+#     response = RedirectResponse(url=redirect_url)
+
+#     # Додаємо токени до cookies
+#     response.set_cookie("access_token", access_token)
+#     response.set_cookie("refresh_token", refresh_token)
+
+#     return response
 
 
 @router.get("/refresh_token", response_model=TokenModel)

@@ -10,6 +10,7 @@ class UserModel(BaseModel):
     username: str = Field(min_length=6, max_length=12)
     email: EmailStr
     password: str = Field(min_length=6, max_length=8)
+    roles: Role
 
 
 class DateModel(BaseModel):
